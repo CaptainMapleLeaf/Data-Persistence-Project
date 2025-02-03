@@ -12,16 +12,21 @@ public class MainManager : MonoBehaviour
 
     public Text ScoreText;
     public GameObject GameOverText;
+    public Text highScoreText;
     
     private bool m_Started = false;
     private int m_Points;
     
     private bool m_GameOver = false;
 
-    
+
+
+
     // Start is called before the first frame update
     void Start()
     {
+        highScoreText = GameObject.Find("HighScoreText").GetComponent<Text>(); 
+        DisplayHighScore();
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -72,5 +77,24 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+
+        //check if score is higher than high score
+        //if so, save the player name and current score to disk as high score (variable in playerData class)
+        CheckHighScore(m_Points);
+        DisplayHighScore();
+    }
+
+    public void CheckHighScore(int score)
+    {
+        if(score > PlayerData.Instance.highScore)
+        {
+            PlayerData.Instance.highScore = score;
+            PlayerData.Instance.HSPlayerName = PlayerData.Instance.playerName;
+            PlayerData.Instance.SaveHighScore();
+        }
+    }
+    public void DisplayHighScore()
+    {
+        highScoreText.text = "High Score: " + PlayerData.Instance.HSPlayerName + " : " + PlayerData.Instance.highScore;
     }
 }
